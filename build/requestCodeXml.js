@@ -7,9 +7,9 @@ const {fetch} = require('fetch-ponyfill')({Promise})
 const endpoint = 'https://epsg.io/'
 const userAgent = 'https://github.com/derhuerst/epsg-index'
 
-const request = (query) => {
-	query = Object.assign({format: 'json'}, query)
-	return fetch(endpoint + '?' + stringify(query), {
+const requestCodeXml = (code) => {
+	//query = Object.assign({format: 'json'}, query)
+	return fetch(endpoint+code+".xml", {
 		mode: 'cors', 
 		redirect: 'follow',
 		headers: {'User-Agent': userAgent}
@@ -20,8 +20,8 @@ const request = (query) => {
 			err.statusCode = res.status
 			throw err
 		}
-		return res.json()
+		return res.text()
 	})
 }
 
-module.exports = request
+module.exports = requestCodeXml
