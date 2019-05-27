@@ -61,8 +61,8 @@ const fetchAll = (nrOfPages) => {
 	})
 }
 
-const AXIS_EAST = 'AXIS[X, EAST],';
-const AXIS_NORTH = 'AXIS[Y, NORTH],';
+const AXIS_EAST = 'AXIS["Easting", EAST],';
+const AXIS_NORTH = 'AXIS["Northing", NORTH],';
 const parseResult = (res) => {
 	return new Promise((yay, nay) =>{
 	
@@ -99,6 +99,7 @@ const parseResult = (res) => {
 			parseResultInfo(res, yay);
 		}).catch(error =>{
 			// 不存在 或者 网络请求错误
+			console.log(error);
 			console.log("请求失败！code：" + res.code);
 			requestErrorInfo.push("请求失败！code：" + res.code + "/n");
 			parseResultInfo(res, yay);
@@ -232,7 +233,7 @@ const getFile = () =>{
 
 		// 异常继续 网络总是中断 跑不完不许停
 		// 通过请求xml信息这步异常没处理（1、没有xml 2、网络没响应）
-		getFile();
+		//getFile();
 	})
 }
 

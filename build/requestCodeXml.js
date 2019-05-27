@@ -17,6 +17,7 @@ const requestCodeXml = (code) => {
 	.then((res) => {
 		if (!res.ok) {
 			const err = new Error(res.statusText)
+			err.epsgCode = code;
 			err.statusCode = res.status
 			throw err
 		}
