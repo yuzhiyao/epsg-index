@@ -10,7 +10,7 @@ const reqxml = require('./requestCodeXml')
 const xmlParser = new xml2js.Parser();
 
 // 需要更新的文件夹路径
-const epsgcodesPath = path.resolve('./epsgcodes');
+const epsgcodesPath = path.resolve('./epsg_with_axis');
 
 const updateFiles = (epsgcodesPath) =>{
 	fs.readdir(epsgcodesPath, function(err, files){
@@ -32,8 +32,8 @@ updateFiles(epsgcodesPath);
 
 
 
-const AXIS_EAST = 'AXIS["Easting", EAST],';
-const AXIS_NORTH = 'AXIS["Northing", NORTH],';
+const AXIS_EAST = 'AXIS["Easting", "EAST"],';
+const AXIS_NORTH = 'AXIS["Northing", "NORTH"],';
 const parseResult = (res, filePath) => {
     // 部分wkt已经存在坐标轴信息
 	if(res.wkt && res.wkt.indexOf("AXIS") < 0){
@@ -50,12 +50,14 @@ const parseResult = (res, filePath) => {
 					}
 				}
 	
-				let stArray = res.wkt.split("UNIT"), addIndex = stArray.length-1, newWkt = "";
+				let stArray = res.wkt.split("UNIT"), addIndex = stArray.length-1, newWkt = stArray[0];
 				for(let index in stArray){
 					if(index == addIndex){
-						newWkt += wktAxis;
+						newWkt += wktAxis + "UNIT" + stArray[index];
+					}else if(index > 0){
+						newWkt += "UNIT" + stArray[index];
 					}
-					newWkt += "UNIT" + stArray[index];
+					
 				}
 				res.wkt = newWkt;
 

@@ -61,52 +61,55 @@ const fetchAll = (nrOfPages) => {
 	})
 }
 
-const AXIS_EAST = 'AXIS["Easting", EAST],';
-const AXIS_NORTH = 'AXIS["Northing", NORTH],';
+const AXIS_EAST = 'AXIS["Easting", "EAST"],';
+const AXIS_NORTH = 'AXIS["Northing", "NORTH"],';
 const parseResult = (res) => {
 	return new Promise((yay, nay) =>{
 	
+		parseResultInfo(res, yay);
 		// 部分wkt已经存在坐标轴信息
-	if(res.wkt && res.wkt.indexOf("AXIS") > 0){
-		console.log("index: " + res.wkt.indexOf("AXIS"));
-		console.log("has axis info::" + res.code);
-		parseResultInfo(res, yay);
-	}else if(res.wkt){
-		console.log("ququest::" + res.code);
-		//没有坐标轴信息的尝试请求{code}.xml信息获取坐标轴信息参数 进一步完善wkt
-		getAxisInFo(res.code).then(axisInfos =>{
-			if(_.isArray(axisInfos) && axisInfos.length > 1){
-				let wktAxis = "";
-				for(let i = 0; i< 2; i++){
-					if(axisInfos[i] === "east"){
-						wktAxis += AXIS_EAST; 
-					}else if(axisInfos[i] === 'north'){
-						wktAxis += AXIS_NORTH;
-					}
-				}
+	// if(res.wkt && res.wkt.indexOf("AXIS") > 0){
+	// 	console.log("index: " + res.wkt.indexOf("AXIS"));
+	// 	console.log("has axis info::" + res.code);
+	// 	parseResultInfo(res, yay);
+	// }else if(res.wkt){
+	// 	console.log("ququest::" + res.code);
+	// 	//没有坐标轴信息的尝试请求{code}.xml信息获取坐标轴信息参数 进一步完善wkt
+	// 	getAxisInFo(res.code).then(axisInfos =>{
+	// 		if(_.isArray(axisInfos) && axisInfos.length > 1){
+	// 			let wktAxis = "";
+	// 			for(let i = 0; i< 2; i++){
+	// 				if(axisInfos[i] === "east"){
+	// 					wktAxis += AXIS_EAST; 
+	// 				}else if(axisInfos[i] === 'north'){
+	// 					wktAxis += AXIS_NORTH;
+	// 				}
+	// 			}
 	
-				let stArray = res.wkt.split("UNIT"), addIndex = stArray.length-1, newWkt = "";
-				for(let index in stArray){
-					if(index == addIndex){
-						newWkt += wktAxis;
-					}
-					newWkt += "UNIT" + stArray[index];
-				}
-				res.wkt = newWkt;
-			}else{
-				console.log("异常情况！code:" + res.code);
-			}
-			parseResultInfo(res, yay);
-		}).catch(error =>{
-			// 不存在 或者 网络请求错误
-			console.log(error);
-			console.log("请求失败！code：" + res.code);
-			requestErrorInfo.push("请求失败！code：" + res.code + "/n");
-			parseResultInfo(res, yay);
-		});
-	}else{
-		parseResultInfo(res, yay);
-	}
+	// 			let stArray = res.wkt.split("UNIT"), addIndex = stArray.length-1, newWkt = "";
+	// 			for(let index in stArray){
+	// 				if(index == addIndex){
+	// 					newWkt += wktAxis;
+	// 				}
+	// 				else if(index > 0){
+	// 					newWkt += "UNIT" + stArray[index];
+	// 				}
+	// 			}
+	// 			res.wkt = newWkt;
+	// 		}else{
+	// 			console.log("异常情况！code:" + res.code);
+	// 		}
+	// 		parseResultInfo(res, yay);
+	// 	}).catch(error =>{
+	// 		// 不存在 或者 网络请求错误
+	// 		console.log(error);
+	// 		console.log("请求失败！code：" + res.code);
+	// 		requestErrorInfo.push("请求失败！code：" + res.code + "/n");
+	// 		parseResultInfo(res, yay);
+	// 	});
+	// }else{
+	// 	parseResultInfo(res, yay);
+	// }
 	});
 }
 const parseResultInfo = (res,yay) => {
@@ -217,8 +220,8 @@ const getFile = () =>{
 	.then((results) => {
 		const getResultPromise = results.map(parseResult);
 	
-		const dest = path.join(dir, 'error.json');
-		fs.writeFile(dest, JSON.stringify(requestErrorInfo), () =>{})
+		// const dest = path.join(dir, 'error.json');
+		// fs.writeFile(dest, JSON.stringify(requestErrorInfo), () =>{})
 	
 		Promise.all(getResultPromise).then((values) =>{
 			return Promise.all([
@@ -233,7 +236,7 @@ const getFile = () =>{
 
 		// 异常继续 网络总是中断 跑不完不许停
 		// 通过请求xml信息这步异常没处理（1、没有xml 2、网络没响应）
-		//getFile();
+		getFile();
 	})
 }
 
